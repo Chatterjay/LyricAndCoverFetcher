@@ -82,7 +82,7 @@ def get_file_type(paths):
 
 
 # 读取音频文件的元数据，如专辑、标题和艺术家
-def read_file_stats(paths):
+def get_file_stats(paths):
     """
     读取音频文件的元数据，包括专辑、标题和艺术家信息。
 
@@ -114,31 +114,6 @@ def read_file_stats(paths):
     except Exception as e:
         print(f"{ErrTip}: 读取文件属性时出错: {e}")
         return {"album": None, "title": None, "artist": None}
-
-
-def write_audio_tags(paths, album, title, artist):
-    """
-    写入音频标签信息到指定路径的音频文件中。
-
-    参数:
-    paths (str): 音频文件的路径。
-    album (str): 唱片集名称。
-    title (str): 音频标题。
-    artist (str): 演唱者名称。
-    """
-    # 获取文件类型
-    file_extension = get_file_type(paths)['file_type']
-    try:
-        if file_extension == 'mp3':
-            audio = EasyID3(paths)
-            set_stats(audio, album, title, artist)  # 设置 MP3 文件的统计信息
-
-        elif file_extension == 'flac':
-            audio = FLAC(paths)
-            set_stats(audio, album, title, artist)  # 设置 FLAC 文件的统计信息
-
-    except Exception as e:
-        print(f"写入文件属性时出错: {e}")
 
 
 def set_stats(audio_data, album, title, artist):
@@ -199,7 +174,33 @@ def set_lyrics(lyrics, path):
     except Exception as e:
         print(f"{ErrTip} 写入歌词时出错: {e}")
 
-def embed_cover_in_flac(path, cover_data):
+
+def write_audio_tags(paths, album, title, artist):
+    """
+    写入音频标签信息到指定路径的音频文件中。
+
+    参数:
+    paths (str): 音频文件的路径。
+    album (str): 唱片集名称。
+    title (str): 音频标题。
+    artist (str): 演唱者名称。
+    """
+    # 获取文件类型
+    file_extension = get_file_type(paths)['file_type']
+    try:
+        if file_extension == 'mp3':
+            audio = EasyID3(paths)
+            set_stats(audio, album, title, artist)  # 设置 MP3 文件的统计信息
+
+        elif file_extension == 'flac':
+            audio = FLAC(paths)
+            set_stats(audio, album, title, artist)  # 设置 FLAC 文件的统计信息
+
+    except Exception as e:
+        print(f"写入文件属性时出错: {e}")
+
+
+def write_audio_image(path, cover_data):
     """
     将封面图片嵌入到音频文件中。
     参数:
@@ -242,6 +243,7 @@ def embed_cover_in_flac(path, cover_data):
         print(f"{InfoTip} FLAC封面写入成功")
     else:
         print(f"{ErrTip} 不支持的文件类型")
+
 
 ErrTip = f'{Fore.RED}[ERROR]: {Style.RESET_ALL}'
 WarnTip = f'{Fore.YELLOW}[WARNNING]: {Style.RESET_ALL}'

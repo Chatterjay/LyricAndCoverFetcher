@@ -1,8 +1,9 @@
 import os.path
 import sys
 
-from utils import read_file_stats, search_request_mse, write_audio_tags, set_lyrics, ErrTip, InfoTip, \
-    search_cover_image, embed_cover_in_flac
+from utils import get_file_stats, search_request_mse, write_audio_tags, set_lyrics, ErrTip, InfoTip, \
+    search_cover_image, write_audio_image
+
 
 
 def main():
@@ -54,7 +55,7 @@ def main():
 def process_audio_file(path):
     try:
         # 读取文件的属性
-        stats = read_file_stats(path)
+        stats = get_file_stats(path)
 
         if stats['title'] is None:
             print(f"{ErrTip}文件 {path} 缺少标题信息，跳过...")
@@ -76,9 +77,9 @@ def process_audio_file(path):
 
         # 写入歌词
         set_lyrics(res['lyrics'], path)
-        embed_cover_in_flac(path,buffer)
+        write_audio_image(path, buffer)
 
-        print(f"{InfoTip}文件 {path}处理成功。")
+        print(f"{InfoTip}文件 {path}处理成功")
         return True  # 标记处理成功
 
     except Exception as e:
