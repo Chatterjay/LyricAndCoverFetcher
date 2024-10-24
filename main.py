@@ -1,7 +1,8 @@
 import os.path
 import sys
 
-from utils import read_file_stats, search_request_mse, write_audio_tags, set_lyrics, ErrTip, InfoTip
+from utils import read_file_stats, search_request_mse, write_audio_tags, set_lyrics, ErrTip, InfoTip, \
+    search_cover_image, embed_cover_in_flac
 
 
 def main():
@@ -56,16 +57,17 @@ def process_audio_file(path):
         stats = read_file_stats(path)
 
         if stats['title'] is None:
-            print(f"{ErrTip} 文件 {path} 缺少标题信息，跳过...")
+            print(f"{ErrTip}文件 {path} 缺少标题信息，跳过...")
             return False  # 标记处理失败
 
         # 模拟读取操作可能会出错的部分
-        print(f"{InfoTip} 正在处理文件: {path}")
+        print(f"{InfoTip}正在处理文件: {path}")
 
         # 请求查找资源
         res_list = search_request_mse(stats)
+        buffer = search_cover_image(stats)
         if not res_list or res_list[0] is None:
-            print(f"{ErrTip} 未能找到匹配的结果: {path}")
+            print(f"{ErrTip}歌词未能找到匹配的结果: {path}")
             return False  # 标记处理失败
 
         res = res_list[0]
@@ -74,12 +76,13 @@ def process_audio_file(path):
 
         # 写入歌词
         set_lyrics(res['lyrics'], path)
+        embed_cover_in_flac(path,buffer)
 
-        print(f"{InfoTip} 文件 {path} 处理成功。")
+        print(f"{InfoTip}文件 {path}处理成功。")
         return True  # 标记处理成功
 
     except Exception as e:
-        print(f"{ErrTip} 处理文件 {path} 时发生错误: {e}")
+        print(f"{ErrTip}处理文件 {path} 时发生错误: {e}")
         return False  # 标记处理失败
 
 
@@ -88,7 +91,7 @@ if __name__ == '__main__':
     main()
 
     # 测试用例，替换成实际文件路径
-    # path = r"D:\Temp\123\25時、ナイトコードで。,初音ミク - 妄想感傷代償連盟 (feat. 宵崎奏&東雲絵名&初音ミク).flac"
+    # path = r"E:\ClariS - アンダンテ.mp3"
     # process_audio_file(path)
 
     input('按任意键退出....')
