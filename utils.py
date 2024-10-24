@@ -1,11 +1,12 @@
+from colorama import Fore, Style, init
 import filetype
 import requests
 from mutagen.easyid3 import EasyID3
-from mutagen.id3 import USLT, ID3
+from mutagen.id3 import USLT
 from mutagen.flac import FLAC
 from mutagen.mp3 import MP3
 
-
+init(autoreset=True)
 # 向API发起搜索请求，根据参数和是否为批量请求来获取歌词数据
 def search_request_mse(params, is_batch=False):
     """
@@ -31,11 +32,11 @@ def search_request_mse(params, is_batch=False):
         return res.json()  # 返回解析后的JSON数据
 
     except requests.exceptions.HTTPError as http_err:
-        print(f"HTTP错误: {http_err}")  # 打印HTTP错误信息
+        print(f"{err_tip}HTTP错误: {http_err}")  # 打印HTTP错误信息
     except requests.exceptions.RequestException as req_err:
-        print(f"请求错误: {req_err}")  # 打印请求相关的错误
+        print(f"{err_tip}请求错误: {req_err}")  # 打印请求相关的错误
     except Exception as e:
-        print(f"其他错误: {e}")  # 打印其他类型的错误
+        print(f"{err_tip}其他错误: {e}")  # 打印其他类型的错误
     return None  # 如果出错，返回None
 
 
@@ -74,6 +75,7 @@ def read_file_stats(paths):
         album = audio_data.get('album', [None])[0] if audio_data.get('album') else None  # 唱片集
         title = audio_data.get('title', [None])[0] if audio_data.get('title') else None  # 标题
         artist = audio_data.get('artist', [None])[0] if audio_data.get('artist') else None  # 歌者
+
     try:
         if file_extension == 'mp3':
             audio = EasyID3(paths)
@@ -128,7 +130,7 @@ def set_stats(audio_data, album, title, artist):
     audio_data['title'] = title  # 标题
     audio_data['artist'] = artist  # 歌者
     audio_data.save()  # 保存更改
-    print('[info]: 音频属性信息写入成功')
+    print(f'{info_tip} 音频属性信息写入成功')
 
 
 def set_lyrics(lyrics, path):
@@ -144,6 +146,10 @@ def set_lyrics(lyrics, path):
         print(lyrics)
         audio.tags.add(USLT(encoding=3, lang='eng', text=lyrics))
         audio.save()
-        print("[info]: Mp3歌词写入成功")
+        print(f"{info_tip} Mp3歌词写入成功")
     except Exception as e:
-        print(f"[error]: 设置歌词时出错: {e}")
+        print(f"{err_tip} 设置歌词时出错: {e}")
+
+
+err_tip = f'{Fore.YELLOW}[error]: {Style.RESET_ALL}'
+info_tip = f'{Fore.GREEN}[info]: {Style.RESET_ALL}'
