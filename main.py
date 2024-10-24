@@ -82,7 +82,6 @@ def process_audio_file(path):
         write_audio_image(path, buffer)
 
         print(f"{InfoTip}文件 {path}处理完成")
-        print("============================")
         return True  # 标记处理成功
 
     except Exception as e:
