@@ -1,5 +1,6 @@
 import os.path
 import sys
+from time import sleep
 
 from utils import get_file_stats, search_request_mse, write_audio_tags, set_lyrics, ErrTip, InfoTip, \
     search_cover_image, write_audio_image
@@ -58,7 +59,7 @@ def process_audio_file(path):
         stats = get_file_stats(path)
 
         if stats['title'] is None:
-            print(f"{ErrTip}文件 {path} 缺少标题信息，跳过...")
+            print(f"{ErrTip}文件 {path} 缺少标题信息或文件不完整，跳过...")
             return False  # 标记处理失败
 
         # 模拟读取操作可能会出错的部分
@@ -66,6 +67,7 @@ def process_audio_file(path):
 
         # 请求查找资源
         res_list = search_request_mse(stats)
+        sleep(.5)
         buffer = search_cover_image(stats)
         if not res_list or res_list[0] is None:
             print(f"{ErrTip}歌词未能找到匹配的结果: {path}")
@@ -79,7 +81,8 @@ def process_audio_file(path):
         set_lyrics(res['lyrics'], path)
         write_audio_image(path, buffer)
 
-        print(f"{InfoTip}文件 {path}处理成功")
+        print(f"{InfoTip}文件 {path}处理完成")
+        print("============================")
         return True  # 标记处理成功
 
     except Exception as e:

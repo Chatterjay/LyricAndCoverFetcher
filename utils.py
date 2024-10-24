@@ -150,7 +150,7 @@ def set_lyrics(lyrics, path):
             if audio.tags is not None:
                 audio.tags.add(USLT(encoding=3, lang='eng', text=lyrics))
                 audio.save()
-                print(f"{InfoTip} MP3歌词写入成功")
+                print(f"{InfoTip}MP3歌词写入成功")
             else:
                 print(f"{ErrTip} 无法将歌词标签写入到MP3文件")
         # Flac
@@ -161,10 +161,10 @@ def set_lyrics(lyrics, path):
                 audio["LYRICS"] = lyrics
             else:
                 # 如果没有歌词，添加新的歌词标签
-                print(f"${InfoTip}为该FLAC文件添加歌词...")
+                print(f"{InfoTip}为该FLAC文件添加歌词...")
                 audio["LYRICS"] = lyrics
             audio.save()
-            print(f"{InfoTip}Flac歌词写入成功")
+            print(f"{InfoTip}FLAC歌词写入成功")
         else:
             print(f"{ErrTip} 无法将歌词标签写入到文件")
     except FileNotFoundError:
@@ -225,7 +225,7 @@ def write_audio_image(path, cover_data):
             )
         )
         audio.save()
-        print(f"{InfoTip} MP3封面写入成功")
+        print(f"{InfoTip}MP3封面写入成功")
     elif file_extension == 'flac':
         audio = FLAC(path)
         if audio.tags is None:
@@ -240,7 +240,7 @@ def write_audio_image(path, cover_data):
         audio.clear_pictures()  # 清除旧的图片标签
         audio.add_picture(picture)
         audio.save()
-        print(f"{InfoTip} FLAC封面写入成功")
+        print(f"{InfoTip}FLAC封面写入成功")
     else:
         print(f"{ErrTip} 不支持的文件类型")
 
