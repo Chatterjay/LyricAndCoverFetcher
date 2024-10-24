@@ -74,15 +74,17 @@ def read_file_stats(paths):
         album = audio_data.get('album', [None])[0] if audio_data.get('album') else None  # 唱片集
         title = audio_data.get('title', [None])[0] if audio_data.get('title') else None  # 标题
         artist = audio_data.get('artist', [None])[0] if audio_data.get('artist') else None  # 歌者
-
     try:
         if file_extension == 'mp3':
             audio = EasyID3(paths)
-            get_stats(audio)  # 获取 MP3 文件的统计信息
+            get_stats(audio)
+        elif file_extension == 'flac':
+            audio = FLAC(paths)
+            get_stats(audio)
 
         return {"album": album, "title": title, "artist": artist}
     except Exception as e:
-        print(f"读取文件属性时出错: {e}")
+        print(f"[error]: 读取文件属性时出错: {e}")
         return {"album": None, "title": None, "artist": None}
 
 
@@ -126,7 +128,7 @@ def set_stats(audio_data, album, title, artist):
     audio_data['title'] = title  # 标题
     audio_data['artist'] = artist  # 歌者
     audio_data.save()  # 保存更改
-    print('音频信息写入成功')
+    print('[info]: 音频属性信息写入成功')
 
 
 def set_lyrics(lyrics, path):
@@ -136,10 +138,12 @@ def set_lyrics(lyrics, path):
     lyrics (str): 歌词文本。
     """
     try:
-        audio = MP3(path, ID3=ID3)
+        audio = MP3(path)
         if audio.tags is None:
             audio.add_tags()
+        print(lyrics)
         audio.tags.add(USLT(encoding=3, lang='eng', text=lyrics))
         audio.save()
+        print("[info]: Mp3歌词写入成功")
     except Exception as e:
-        print(e)
+        print(f"[error]: 设置歌词时出错: {e}")
